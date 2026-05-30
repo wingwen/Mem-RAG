@@ -1,0 +1,78 @@
+{
+  "description": "Mem-RAG 检索评估数据集（基于 data/ 目录示例文档）",
+  "version": "1.0",
+  "cases": [
+    {
+      "id": "sponge-001",
+      "query": "海绵宝宝住在哪里？",
+      "expected_keywords": ["菠萝", "比基尼海滩"],
+      "expected_source": "海绵宝宝.txt"
+    },
+    {
+      "id": "sponge-002",
+      "query": "蟹堡王的老板是谁？",
+      "expected_keywords": ["蟹老板"],
+      "expected_source": "海绵宝宝.txt"
+    },
+    {
+      "id": "sponge-003",
+      "query": "派大星是什么动物？",
+      "expected_keywords": ["海星"],
+      "expected_source": "海绵宝宝.txt"
+    },
+    {
+      "id": "sponge-004",
+      "query": "痞老板想偷什么秘方？",
+      "expected_keywords": ["蟹黄堡"],
+      "expected_source": "海绵宝宝.txt"
+    },
+    {
+      "id": "krabby-001",
+      "query": "蟹黄堡肉饼需要哪些主要材料？",
+      "expected_keywords": ["海底牛肉", "蟹肉"],
+      "expected_source": "蟹黄堡制作配方.txt"
+    },
+    {
+      "id": "krabby-002",
+      "query": "蟹黄堡面包需要什么？",
+      "expected_keywords": ["芝麻", "buns"],
+      "expected_source": "蟹黄堡制作配方.txt"
+    },
+    {
+      "id": "pokemon-001",
+      "query": "宝可梦动画的主角是谁？",
+      "expected_keywords": ["小智"],
+      "expected_source": "精灵宝可梦.txt"
+    },
+    {
+      "id": "pokemon-002",
+      "query": "皮卡丘的配音演员是谁？",
+      "expected_keywords": ["大谷育江"],
+      "expected_source": "精灵宝可梦.txt"
+    },
+    {
+      "id": "pokemon-003",
+      "query": "宝可梦动画首播时间是什么时候？",
+      "expected_keywords": ["1997"],
+      "expected_source": "精灵宝可梦.txt"
+    },
+    {
+      "id": "tomjerry-001",
+      "query": "汤姆和杰瑞是什么关系？",
+      "expected_keywords": ["猫", "老鼠"],
+      "expected_source": "猫和老鼠汤姆和杰瑞.txt"
+    },
+    {
+      "id": "tomjerry-002",
+      "query": "猫和老鼠获得了什么奥斯卡奖？",
+      "expected_keywords": ["奥斯卡"],
+      "expected_source": "猫和老鼠汤姆和杰瑞.txt"
+    },
+    {
+      "id": "tomjerry-003",
+      "query": "斯派克是什么动物？",
+      "expected_keywords": ["斗牛犬"],
+      "expected_source": "猫和老鼠汤姆和杰瑞.txt"
+    }
+  ]
+}

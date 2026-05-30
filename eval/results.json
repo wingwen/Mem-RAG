@@ -1,0 +1,241 @@
+{
+  "dataset": "D:\\core\\Mem-RAG-main\\eval\\retrieval_dataset.json",
+  "evaluated_at": "2026-05-28 21:48:54",
+  "top_k": 3,
+  "total_cases": 12,
+  "hit_at_k_any": 0.9166666666666666,
+  "hit_at_k_all": 0.9166666666666666,
+  "mrr": 0.9166666666666666,
+  "avg_keyword_recall": 0.9166666666666666,
+  "source_hit_at_k": 0.8333333333333334,
+  "avg_retrieved_count": 2.5833333333333335,
+  "case_results": [
+    {
+      "case_id": "sponge-001",
+      "query": "海绵宝宝住在哪里？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "海绵宝宝.txt",
+        "蟹黄堡制作配方.txt",
+        "海绵宝宝.txt"
+      ],
+      "matched_keywords": [
+        "菠萝",
+        "比基尼海滩"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "sponge-002",
+      "query": "蟹堡王的老板是谁？",
+      "retrieved_count": 2,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": false,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "蟹黄堡制作配方.txt",
+        "蟹黄堡制作配方.txt"
+      ],
+      "matched_keywords": [
+        "蟹老板"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "sponge-003",
+      "query": "派大星是什么动物？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "海绵宝宝.txt",
+        "蟹黄堡制作配方.txt",
+        "猫和老鼠汤姆和杰瑞.txt"
+      ],
+      "matched_keywords": [
+        "海星"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "sponge-004",
+      "query": "痞老板想偷什么秘方？",
+      "retrieved_count": 1,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": false,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "蟹黄堡制作配方.txt"
+      ],
+      "matched_keywords": [
+        "蟹黄堡"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "krabby-001",
+      "query": "蟹黄堡肉饼需要哪些主要材料？",
+      "retrieved_count": 2,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "蟹黄堡制作配方.txt",
+        "蟹黄堡制作配方.txt"
+      ],
+      "matched_keywords": [
+        "海底牛肉",
+        "蟹肉"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "krabby-002",
+      "query": "蟹黄堡面包需要什么？",
+      "retrieved_count": 2,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "蟹黄堡制作配方.txt",
+        "蟹黄堡制作配方.txt"
+      ],
+      "matched_keywords": [
+        "芝麻",
+        "buns"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "pokemon-001",
+      "query": "宝可梦动画的主角是谁？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "精灵宝可梦.txt",
+        "蟹黄堡制作配方.txt",
+        "精灵宝可梦.txt"
+      ],
+      "matched_keywords": [
+        "小智"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "pokemon-002",
+      "query": "皮卡丘的配音演员是谁？",
+      "retrieved_count": 3,
+      "hit_any": false,
+      "hit_all": false,
+      "source_hit": true,
+      "mrr": 0.0,
+      "keyword_recall": 0.0,
+      "top_sources": [
+        "精灵宝可梦.txt",
+        "蟹黄堡制作配方.txt",
+        "精灵宝可梦.txt"
+      ],
+      "matched_keywords": [],
+      "missing_keywords": [
+        "大谷育江"
+      ]
+    },
+    {
+      "case_id": "pokemon-003",
+      "query": "宝可梦动画首播时间是什么时候？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "精灵宝可梦.txt",
+        "蟹黄堡制作配方.txt",
+        "精灵宝可梦.txt"
+      ],
+      "matched_keywords": [
+        "1997"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "tomjerry-001",
+      "query": "汤姆和杰瑞是什么关系？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "猫和老鼠汤姆和杰瑞.txt",
+        "蟹黄堡制作配方.txt",
+        "猫和老鼠汤姆和杰瑞.txt"
+      ],
+      "matched_keywords": [
+        "猫",
+        "老鼠"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "tomjerry-002",
+      "query": "猫和老鼠获得了什么奥斯卡奖？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "猫和老鼠汤姆和杰瑞.txt",
+        "蟹黄堡制作配方.txt",
+        "猫和老鼠汤姆和杰瑞.txt"
+      ],
+      "matched_keywords": [
+        "奥斯卡"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "tomjerry-003",
+      "query": "斯派克是什么动物？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "猫和老鼠汤姆和杰瑞.txt",
+        "蟹黄堡制作配方.txt",
+        "猫和老鼠汤姆和杰瑞.txt"
+      ],
+      "matched_keywords": [
+        "斗牛犬"
+      ],
+      "missing_keywords": []
+    }
+  ]
+}

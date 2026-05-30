@@ -1,0 +1,54 @@
+{
+  "description": "NFS 文档检索评估（匹配 day29-第三章NFS.pdf）",
+  "version": "1.0",
+  "cases": [
+    {
+      "id": "nfs-001",
+      "query": "NFS 是什么的缩写？",
+      "expected_keywords": ["Network File System", "网络文件系统"],
+      "expected_source": "day29-第三章NFS.pdf"
+    },
+    {
+      "id": "nfs-002",
+      "query": "使用 NFS 为什么必须先有 rpc 服务？",
+      "expected_keywords": ["rpc", "远程过程调用"],
+      "expected_source": "day29-第三章NFS.pdf"
+    },
+    {
+      "id": "nfs-003",
+      "query": "NFS 服务端和客户端的内网 IP 分别是多少？",
+      "expected_keywords": ["172.16.1.31", "172.16.1.41"],
+      "expected_source": "day29-第三章NFS.pdf"
+    },
+    {
+      "id": "nfs-004",
+      "query": "客户端如何挂载 NFS 共享目录？",
+      "expected_keywords": ["mount", "nfs"],
+      "expected_source": "day29-第三章NFS.pdf"
+    },
+    {
+      "id": "nfs-005",
+      "query": "NFS 共享目录配置写在哪个文件？",
+      "expected_keywords": ["/etc/exports"],
+      "expected_source": "day29-第三章NFS.pdf"
+    },
+    {
+      "id": "nfs-006",
+      "query": "启动 NFS 前需要先启用哪个服务？",
+      "expected_keywords": ["rpcbind"],
+      "expected_source": "day29-第三章NFS.pdf"
+    },
+    {
+      "id": "nfs-007",
+      "query": "如何查看远端 NFS 共享目录？",
+      "expected_keywords": ["showmount"],
+      "expected_source": "day29-第三章NFS.pdf"
+    },
+    {
+      "id": "nfs-008",
+      "query": "all_squash 参数有什么作用？",
+      "expected_keywords": ["all_squash"],
+      "expected_source": "day29-第三章NFS.pdf"
+    }
+  ]
+}

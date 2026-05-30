@@ -1,0 +1,168 @@
+{
+  "dataset": "eval\\nfs_dataset.json",
+  "evaluated_at": "2026-05-28 21:49:10",
+  "top_k": 3,
+  "total_cases": 8,
+  "hit_at_k_any": 1.0,
+  "hit_at_k_all": 1.0,
+  "mrr": 0.8333333333333333,
+  "avg_keyword_recall": 1.0,
+  "source_hit_at_k": 1.0,
+  "avg_retrieved_count": 2.75,
+  "case_results": [
+    {
+      "case_id": "nfs-001",
+      "query": "NFS 是什么的缩写？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "day29-第三章NFS.pdf",
+        "蟹黄堡制作配方.txt",
+        "day29-第三章NFS.pdf"
+      ],
+      "matched_keywords": [
+        "Network File System",
+        "网络文件系统"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "nfs-002",
+      "query": "使用 NFS 为什么必须先有 rpc 服务？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "day29-第三章NFS.pdf",
+        "蟹黄堡制作配方.txt",
+        "day29-第三章NFS.pdf"
+      ],
+      "matched_keywords": [
+        "rpc",
+        "远程过程调用"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "nfs-003",
+      "query": "NFS 服务端和客户端的内网 IP 分别是多少？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "day29-第三章NFS.pdf",
+        "unknown",
+        "day29-第三章NFS.pdf"
+      ],
+      "matched_keywords": [
+        "172.16.1.31",
+        "172.16.1.41"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "nfs-004",
+      "query": "客户端如何挂载 NFS 共享目录？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "day29-第三章NFS.pdf",
+        "蟹黄堡制作配方.txt",
+        "day29-第三章NFS.pdf"
+      ],
+      "matched_keywords": [
+        "mount",
+        "nfs"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "nfs-005",
+      "query": "NFS 共享目录配置写在哪个文件？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 0.3333333333333333,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "day29-第三章NFS.pdf",
+        "蟹黄堡制作配方.txt",
+        "day29-第三章NFS.pdf"
+      ],
+      "matched_keywords": [
+        "/etc/exports"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "nfs-006",
+      "query": "启动 NFS 前需要先启用哪个服务？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 0.3333333333333333,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "day29-第三章NFS.pdf",
+        "蟹黄堡制作配方.txt",
+        "day29-第三章NFS.pdf"
+      ],
+      "matched_keywords": [
+        "rpcbind"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "nfs-007",
+      "query": "如何查看远端 NFS 共享目录？",
+      "retrieved_count": 3,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "day29-第三章NFS.pdf",
+        "蟹黄堡制作配方.txt",
+        "day29-第三章NFS.pdf"
+      ],
+      "matched_keywords": [
+        "showmount"
+      ],
+      "missing_keywords": []
+    },
+    {
+      "case_id": "nfs-008",
+      "query": "all_squash 参数有什么作用？",
+      "retrieved_count": 1,
+      "hit_any": true,
+      "hit_all": true,
+      "source_hit": true,
+      "mrr": 1.0,
+      "keyword_recall": 1.0,
+      "top_sources": [
+        "day29-第三章NFS.pdf"
+      ],
+      "matched_keywords": [
+        "all_squash"
+      ],
+      "missing_keywords": []
+    }
+  ]
+}
