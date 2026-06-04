@@ -37,6 +37,17 @@ class MemoryContext:
     history_messages: list[BaseMessage]
 
 
+@dataclass(frozen=True)
+class ResolvedTopic:
+    """主题解析结果（脱离 Session 的安全快照）。"""
+    id: int
+    name: str
+
+
+def _topic_snapshot(topic: MemoryTopic) -> ResolvedTopic:
+    return ResolvedTopic(id=topic.id, name=topic.topic_name)
+
+
 class StructuredMemoryService:
     def __init__(self):
         self._chat_model = get_light_chat_model()
@@ -137,11 +148,13 @@ class StructuredMemoryService:
         user_input: str,
         use_llm: bool = False,
         create_if_missing: bool = True,
-    ) -> MemoryTopic | None:
-        """为当前用户输入解析/创建主题。"""
+    ) -> ResolvedTopic | None:
+        """为当前用户输入解析/创建主题，返回 Session 无关的快照。"""
         db = SessionLocal()
         try:
-            session_id = self._get_db_session_id(session_uuid)
+            session_id = db.execute(
+                select(ChatSession.id).where(ChatSession.session_uuid == session_uuid)
+            ).scalars().first()
             if not session_id:
                 return None
 
@@ -164,14 +177,14 @@ class StructuredMemoryService:
                     .values(active_topic_id=matched.id)
                 )
                 db.commit()
-                return matched
+                return _topic_snapshot(matched)
 
             if session_row and session_row.active_topic_id:
                 active = db.execute(
                     select(MemoryTopic).where(MemoryTopic.id == session_row.active_topic_id)
                 ).scalars().first()
                 if active:
-                    return active
+                    return _topic_snapshot(active)
 
             if not create_if_missing:
                 return None
@@ -192,7 +205,7 @@ class StructuredMemoryService:
                                 .values(active_topic_id=t.id)
                             )
                             db.commit()
-                            return t
+                            return _topic_snapshot(t)
 
                 new_topic = MemoryTopic(
                     session_id=session_id,
@@ -212,7 +225,7 @@ class StructuredMemoryService:
                 )
                 db.commit()
                 db.refresh(new_topic)
-                return new_topic
+                return _topic_snapshot(new_topic)
 
             if topics:
                 active = topics[0]
@@ -222,7 +235,7 @@ class StructuredMemoryService:
                     .values(active_topic_id=active.id)
                 )
                 db.commit()
-                return active
+                return _topic_snapshot(active)
             return None
         finally:
             db.close()
@@ -242,7 +255,7 @@ class StructuredMemoryService:
             )
 
             active_topic_id = active_topic.id if active_topic else None
-            active_topic_name = active_topic.topic_name if active_topic else "新对话"
+            active_topic_name = active_topic.name if active_topic else "新对话"
 
             memory_lines = ["【结构化对话记忆】"]
 

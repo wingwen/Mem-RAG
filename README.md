@@ -27,15 +27,13 @@
 
 | 模块 | 能力 |
 |------|------|
-| **混合检索** | Dense (Milvus/BGE-M3) + Sparse (BM25) → RRF Merge → BGE-Reranker-v2 |
+| **混合检索** | Milvus 向量 + BM25 稀疏 + 自实现 RRF 融合 |
 | **结构化记忆** | 主题分类、主题摘要、同主题优先召回，提升多轮连贯性 |
 | **知识库 Pipeline** | TXT / PDF / Word → 混合分块 → 向量 + BM25 双索引 |
 | **全栈交付** | FastAPI 流式 SSE + Vue3 前端 + MySQL 持久化 |
 | **安全基线** | `.env` 配置隔离、bcrypt 哈希、会话归属校验 |
 | **评估闭环** | Hit@K / MRR / 来源命中率，动画片集 Hit@3 **91.7%** |
-| **LangGraph 编排** | Query Rewrite → Memory → Retrieval → Fusion → Generation |
-| **Query Rewrite** | 指代/短句语义补全，如「它支持 Docker 吗」→「Mem-RAG 是否支持 Docker 部署」 |
-| **检索拒答门控** | 无命中不调用 LLM，返回「知识库中暂无相关信息」 |
+| **LangGraph 编排** | `AgentState` 状态机：Router → Memory → Retrieval → Fusion → Generation |
 
 ---
 
@@ -45,36 +43,20 @@
 
 ```mermaid
 flowchart LR
-    START([START]) --> RW[Query Rewrite]
-    RW --> M[Memory Recall]
+    START([START]) --> R[Router]
+    R --> M[Memory Recall]
     M --> RET[Retrieval]
-    RET -->|命中| F[Context Fusion]
-    RET -->|未命中| NA[No Answer]
+    RET --> RR[Rerank 精排]
+    RR --> F[Context Fusion]
     F --> G[Generation]
     G --> END([END])
-    NA --> END
 ```
-
-**检索拒答门控**（`app/retrieval/gate.py`）：无文档或问句关键词与 Top 文档不匹配时，直接返回「知识库中暂无相关信息」，**不调用 LLM**，避免 Mem-RAG/Docker 等库外话题胡编。
-
-| 配置 | 默认 | 说明 |
-|------|------|------|
-| `RETRIEVAL_STRICT_GATE` | `true` | 是否启用严格门控 |
-| `RETRIEVAL_MIN_KEYWORD_HITS` | `1` | 至少几个问句关键词出现在检索片段中 |
-| `NO_KB_ANSWER_MESSAGE` | 固定文案 | 未命中时的回复 |
-
-**Query Rewrite 示例**
-
-| 用户原问 | 改写后（检索用） |
-|----------|------------------|
-| 它支持 Docker 吗 | Mem-RAG 是否支持 Docker 部署 |
-| 刚才那个怎么配置 | （结合对话主题补全为完整问句） |
 
 **核心状态**（`app/graph/state.py` → `AgentState`）：
 
 | 字段 | 说明 |
 |------|------|
-| `query` / `rewritten_query` | 用户问题 / Rewrite Agent 改写后检索问句 |
+| `query` / `rewritten_query` | 用户问题 / Router 改写后检索问句 |
 | `memories` / `memory_block` | 结构化主题记忆 |
 | `retrieved_docs` | 混合检索文档块 |
 | `final_context` | 记忆 + 检索融合上下文 |
@@ -87,9 +69,9 @@ app/
 ├── graph/           # LangGraph 状态机
 │   ├── state.py
 │   ├── workflow.py
-│   └── nodes/       # rewrite / memory / retrieval / fusion / generation
+│   └── nodes/       # router / memory / retrieval / rerank / fusion / generation
 ├── memory/          # 结构化记忆服务
-├── retrieval/       # Dense + Sparse → RRF → Rerank
+├── retrieval/       # Milvus + BM25 + RRF + Rerank
 ├── llm/             # DashScope 模型工厂
 └── api/             # FastAPI 路由
 ```
@@ -118,7 +100,7 @@ flowchart TB
         SM["StructuredMemory<br/>主题记忆构建"]
         VS["VectorStoreService<br/>Milvus + BM25 + RRF"]
         RAG["RagService<br/>LangGraph astream"]
-        LLM["通义千问 qwen-max"]
+        LLM["通义千问 qwen3-8b"]
     end
 
     subgraph Ingest["知识库入库"]
@@ -226,43 +208,6 @@ flowchart LR
 
 ---
 
-## Hybrid Retrieval（Dense + Sparse → Merge → Rerank）
-
-```mermaid
-flowchart TB
-    Q[Query] --> H[Hybrid Retriever]
-    H --> D[Dense Search<br/>Milvus + BGE-M3 / DashScope]
-    H --> S[Sparse Search<br/>BM25]
-    D --> M[Merge RRF]
-    S --> M
-    M --> R[Rerank<br/>BGE-Reranker-v2]
-    R --> TOP[Top-K 文档块]
-```
-
-| 阶段 | 实现 | 文件 |
-|------|------|------|
-| Dense | Milvus 向量相似度 | `app/retrieval/dense.py` |
-| Sparse | BM25 关键词匹配 | `app/retrieval/sparse.py` |
-| Merge | RRF 倒数秩融合 | `app/retrieval/hybrid.py` |
-| Rerank | BGE-Reranker-v2 精排 | `app/retrieval/reranker.py` |
-
-**推荐配置（简历完整栈）**
-
-```env
-DENSE_EMBEDDING_PROVIDER=bge-m3
-DENSE_MODEL_NAME=BAAI/bge-m3
-RERANKER_ENABLED=true
-RERANKER_MODEL_NAME=BAAI/bge-reranker-v2
-RETRIEVAL_CANDIDATE_K=10
-RETRIEVAL_TOP_K=3
-```
-
-> 切换 Dense 模型后需 **重新导入知识库**（向量空间不兼容）。默认 `dashscope` 可零改动沿用现有 Milvus 数据；Reranker 首次运行会自动下载模型，不可用时会回退 RRF 顺序。
-
-**简历亮点：** 构建 Dense+Sparse Hybrid Retrieval，结合 Milvus 与 BM25 并引入 BGE-Reranker，有效降低语义检索误召回问题。
-
----
-
 ## 知识库入库 Pipeline
 
 ```mermaid
@@ -296,9 +241,9 @@ Mem-RAG-main/
 │   ├── graph/                    # LangGraph 状态机
 │   │   ├── state.py              # AgentState
 │   │   ├── workflow.py           # StateGraph 编译
-│   │   └── nodes/                # rewrite / memory / retrieval / fusion / generation
+│   │   └── nodes/                # router / memory / retrieval / fusion / generation
 │   ├── memory/                   # 结构化记忆封装
-│   ├── retrieval/                # hybrid / dense / sparse / reranker / gate
+│   ├── retrieval/                # 混合检索封装
 │   ├── llm/                      # DashScope 模型工厂
 │   ├── api/                      # FastAPI 路由层
 │   │   ├── api_service.py        # 主入口 & 路由
@@ -338,9 +283,9 @@ Mem-RAG-main/
 |------|------|
 | 编排 | **LangGraph** StateGraph, LangChain Core |
 | 后端 | FastAPI, SQLAlchemy, aiomysql |
-| 检索 | Milvus Lite, BM25, RRF Merge, BGE-Reranker-v2 |
-| Dense Embedding | BGE-M3（推荐）/ DashScope text-embedding-v4 |
-| LLM | 通义千问 `qwen-max`（对话）/ `qwen-turbo`（摘要/分类） |
+| 检索 | Milvus Lite, rank-bm25, 自研 RRF |
+| Embedding | DashScope `text-embedding-v4` |
+| LLM | 通义千问 `qwen3-8b`（对话 / 摘要 / 分类，`.env` 可配置） |
 | 前端 | Vue 3, Tailwind CSS, Fetch ReadableStream |
 | 数据库 | MySQL 8.0+ |
 | 安全 | bcrypt, HttpOnly Cookie, 会话归属校验, CORS 白名单 |
@@ -452,6 +397,31 @@ python -m app.eval.retrieval_eval --dataset eval/nfs_dataset.json --output eval/
 # 仅批量导入示例数据
 python -m app.eval.seed_data
 ```
+
+### 消融实验（Ablation Study）
+
+对比不同检索策略的 Hit@K / MRR，验证 Rerank 等环节的实际增益：
+
+```bash
+# 停止 API 后运行全部实验 A0–A4
+python -m app.eval.ablation_eval --import-data
+
+# 保存报告
+python -m app.eval.ablation_eval --k 3 --output eval/ablation_results.json
+
+# 只跑混合宽召回 vs Rerank
+python -m app.eval.ablation_eval --only A2_hybrid_wide,A3_hybrid_rerank
+```
+
+| 实验 ID | 配置 |
+|---------|------|
+| A0_dense | 仅 Milvus 向量 Top-K |
+| A1_hybrid_legacy | RRF + 97% 阈值（旧版） |
+| A2_hybrid_wide | 仅消融：宽召回直接截 Top-K（**生产已禁用**） |
+| A3_hybrid_rerank | **生产默认**：宽召回 + DashScope Rerank 精排 |
+| A4_dense_rerank | 向量宽召回 + Rerank |
+
+`.env` 可调：`RETRIEVAL_RECALL_K`、`RERANK_ENABLED`、`RERANK_MODEL`（如 `gte-rerank-v2`）、`RERANK_TOP_N`。
 
 ### 评估数据集
 

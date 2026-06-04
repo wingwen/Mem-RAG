@@ -20,9 +20,9 @@ class AgentState(TypedDict, total=False):
     query: str
     session_id: str
 
-    # --- Query Rewrite ---
+    # --- Router ---
     rewritten_query: str
-    route_decision: str  # rewrite_applied | rewrite_skip | rewrite_fallback | empty
+    route_decision: str
 
     # --- Memory ---
     memories: list[dict[str, Any]]
@@ -32,7 +32,6 @@ class AgentState(TypedDict, total=False):
 
     # --- Retrieval ---
     retrieved_docs: list[Document]
-    retrieval_hit: bool
     retrieval_status: Annotated[list[str], _merge_status]
 
     # --- Fusion ---

@@ -128,6 +128,16 @@ async def save_chat_history(s_id: int, user_in: str, raw_out: str):
 async def start_event():
     if not config.DASHSCOPE_API_KEY:
         logger.warning("[Config] 未设置 DASHSCOPE_API_KEY，请在 .env 中配置")
+    logger.info(
+        f"[Config] 对话模型: {config.CHAT_MODEL} | 轻量模型: {config.CHAT_MODEL_LIGHT}"
+    )
+    profile = (
+        f"A3 hybrid recall={config.RETRIEVAL_RECALL_K} → "
+        f"rerank {config.RERANK_MODEL} top={config.RERANK_TOP_N}"
+        if config.RERANK_ENABLED
+        else f"A1 hybrid_legacy top={config.SIMILARITY_THRESHOLD} (A2 已禁用)"
+    )
+    logger.info(f"[Config] 生产检索策略: {profile}")
     await asyncio.to_thread(ensure_memory_schema)
     async with async_engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)

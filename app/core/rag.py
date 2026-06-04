@@ -1,7 +1,7 @@
 """
 RAG 服务：基于 LangGraph StateGraph 的 Agentic RAG 编排。
 
-流程：Rewrite → Memory → Retrieval → Fusion → Generation(stream)
+流程：Router → Memory → Retrieval → Fusion → Generation(stream)
 """
 
 from __future__ import annotations
@@ -10,9 +10,10 @@ import asyncio
 import os
 from typing import AsyncIterator
 
-from app.retrieval.embeddings import get_dense_embeddings
+from langchain_community.embeddings.dashscope import DashScopeEmbeddings
 
 from app.core import config_data as config
+from app.core.logger import logger
 from app.core.vector_stores import VectorStoreService
 from app.graph.nodes.generation import stream_generation
 from app.graph.nodes.retrieval import set_retrieval_service
@@ -27,7 +28,7 @@ class RagService:
     """LangGraph 驱动的 Agentic RAG 服务。"""
 
     def __init__(self) -> None:
-        embedding = get_dense_embeddings()
+        embedding = DashScopeEmbeddings(model=config.EMBEDDINGS_MODEL)
         self.vector_service = VectorStoreService(embedding=embedding)
         set_retrieval_service(RetrievalService(vector_service=self.vector_service))
         self._prep_graph = get_agent_graph(include_generation=False)
@@ -44,19 +45,18 @@ class RagService:
             history_messages=[],
             active_topic="",
             retrieved_docs=[],
-            retrieval_hit=True,
             retrieval_status=[],
             final_context="",
             answer="",
         )
 
     async def _run_prep_pipeline(self, input_text: str, session_id: str) -> AgentState:
-        """执行 Rewrite → Memory → Retrieval → Fusion。"""
+        """执行 Router → Memory → Retrieval → Fusion。"""
         initial = self._initial_state(input_text, session_id)
         return await asyncio.to_thread(self._prep_graph.invoke, initial)
 
     async def astream_response(self, input_text: str, session_id: str) -> AsyncIterator[str]:
-        yield "[状态] LangGraph: Rewrite → Memory → Retrieval → Fusion\n"
+        yield "[状态] LangGraph: Router → Memory → Retrieval → Fusion\n"
         await asyncio.sleep(0)
 
         state = await self._run_prep_pipeline(input_text, session_id)
@@ -65,11 +65,6 @@ class RagService:
             if msg:
                 yield msg if msg.endswith("\n") else f"{msg}\n"
                 await asyncio.sleep(0)
-
-        if not state.get("retrieval_hit", True):
-            answer = state.get("answer") or config.NO_KB_ANSWER_MESSAGE
-            yield answer
-            return
 
         yield "[状态] 正在启动 Generation 流式生成...\n"
         await asyncio.sleep(0)
@@ -85,8 +80,6 @@ class RagService:
         graph = build_agent_graph(include_generation=True)
         initial = self._initial_state(input_text, session_id)
         result = await asyncio.to_thread(graph.invoke, initial)
-        if not result.get("retrieval_hit", True):
-            return result.get("answer") or config.NO_KB_ANSWER_MESSAGE
         return result.get("answer") or ""
 
 
