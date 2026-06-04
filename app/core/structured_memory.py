@@ -8,7 +8,7 @@ import json
 import re
 from dataclasses import dataclass
 
-from langchain_community.chat_models import ChatTongyi
+from app.llm.factory import get_light_chat_model
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 from sqlalchemy import create_engine, select, update, func
 from sqlalchemy.orm import sessionmaker
@@ -39,7 +39,7 @@ class MemoryContext:
 
 class StructuredMemoryService:
     def __init__(self):
-        self._chat_model = ChatTongyi(model="qwen-turbo")
+        self._chat_model = get_light_chat_model()
 
     def _get_db_session_id(self, session_uuid: str) -> int | None:
         db = SessionLocal()

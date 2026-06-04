@@ -13,6 +13,12 @@ md5_path = os.getenv("MD5_PATH", "./database/md5.text")
 DASHSCOPE_API_KEY = os.getenv("DASHSCOPE_API_KEY", "")
 EMBEDDINGS_MODEL = os.getenv("EMBEDDINGS_MODEL", "text-embedding-v4")
 
+# LLM（DashScope 通义千问）
+CHAT_MODEL = os.getenv("CHAT_MODEL", "qwen-max")
+CHAT_MODEL_LIGHT = os.getenv("CHAT_MODEL_LIGHT", "qwen-turbo")
+# Query Rewrite 默认补全的产品/项目名（指代消解）
+REWRITE_PROJECT_NAME = os.getenv("REWRITE_PROJECT_NAME", "Mem-RAG")
+
 # Milvus 配置 (使用 Milvus Lite 本地文件模式)
 MILVUS_URI = os.getenv("MILVUS_URI", "./database/milvus_db.db")
 COLLECTION_NAME = os.getenv("COLLECTION_NAME", "rag_collection")
@@ -30,6 +36,25 @@ BM25_CORPUS_PATH = os.getenv("BM25_CORPUS_PATH", "./database/bm25_corpus.pkl")
 SIMILARITY_THRESHOLD = int(os.getenv("SIMILARITY_THRESHOLD", "3"))
 DENSE_WEIGHT = float(os.getenv("DENSE_WEIGHT", "0.7"))
 SPARSE_WEIGHT = float(os.getenv("SPARSE_WEIGHT", "0.3"))
+
+# Hybrid Retrieval: Dense (Milvus) + Sparse (BM25) → Merge (RRF) → Rerank
+DENSE_EMBEDDING_PROVIDER = os.getenv("DENSE_EMBEDDING_PROVIDER", "dashscope")  # dashscope | bge-m3
+DENSE_MODEL_NAME = os.getenv("DENSE_MODEL_NAME", "BAAI/bge-m3")
+RERANKER_ENABLED = os.getenv("RERANKER_ENABLED", "true").lower() == "true"
+RERANKER_MODEL_NAME = os.getenv("RERANKER_MODEL_NAME", "BAAI/bge-reranker-v2")
+HYBRID_MERGE_STRATEGY = os.getenv("HYBRID_MERGE_STRATEGY", "rrf")
+RRF_K = int(os.getenv("RRF_K", "60"))
+RETRIEVAL_CANDIDATE_K = int(os.getenv("RETRIEVAL_CANDIDATE_K", "10"))
+RETRIEVAL_TOP_K = int(os.getenv("RETRIEVAL_TOP_K", str(SIMILARITY_THRESHOLD)))
+EMBEDDING_BATCH_SIZE = int(os.getenv("EMBEDDING_BATCH_SIZE", "12"))
+
+# 检索拒答门控（无命中不调用 LLM，避免胡编）
+RETRIEVAL_STRICT_GATE = os.getenv("RETRIEVAL_STRICT_GATE", "true").lower() == "true"
+RETRIEVAL_MIN_KEYWORD_HITS = int(os.getenv("RETRIEVAL_MIN_KEYWORD_HITS", "1"))
+NO_KB_ANSWER_MESSAGE = os.getenv(
+    "NO_KB_ANSWER_MESSAGE",
+    "知识库中暂无相关信息，请尝试上传相关文档或换个问法。",
+)
 
 # 文本限制
 MAX_SPLIT_CHAR_NUMBER = int(os.getenv("MAX_SPLIT_CHAR_NUMBER", "1000"))
@@ -56,5 +81,13 @@ CORS_ORIGINS = [
     ).split(",")
     if origin.strip()
 ]
+# 开发时允许 IDE 预览（如 PyCharm 63342）等 localhost 任意端口跨域
+CORS_ALLOW_LOCALHOST_ANY_PORT = os.getenv(
+    "CORS_ALLOW_LOCALHOST_ANY_PORT", "true"
+).lower() == "true"
+CORS_ORIGIN_REGEX = os.getenv(
+    "CORS_ORIGIN_REGEX",
+    r"http://(localhost|127\.0\.0\.1)(:\d+)?",
+)
 COOKIE_SECURE = os.getenv("COOKIE_SECURE", "false").lower() == "true"
 COOKIE_SAMESITE = os.getenv("COOKIE_SAMESITE", "lax")

@@ -5,7 +5,7 @@ import time
 from datetime import datetime
 
 from pymilvus import connections, MilvusClient
-from langchain_community.embeddings import DashScopeEmbeddings
+from app.retrieval.embeddings import get_dense_embeddings
 from app.core import config_data as config
 from app.core.document_parser import parse_document, SUPPORTED_EXTENSIONS
 from app.core.text_splitter import HybridTextSplitter
@@ -34,7 +34,7 @@ def save_md5(md5):
 class KnowledgeBaseService:
     def __init__(self):
         logger.info("[System] 初始化 KnowledgeBaseService...")
-        self.embeddings = DashScopeEmbeddings(model=config.EMBEDDINGS_MODEL)
+        self.embeddings = get_dense_embeddings()
 
         logger.info(f"[Milvus] 正在启动本地引擎: {config.MILVUS_URI}")
         try:

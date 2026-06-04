@@ -28,7 +28,7 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from langchain_community.embeddings import DashScopeEmbeddings
+from app.retrieval.embeddings import get_dense_embeddings
 
 from app.core import config_data as config
 from app.core.vector_stores import VectorStoreService
@@ -132,7 +132,7 @@ def evaluate_case(docs: list[Document], case: dict, k: int) -> CaseResult:
 
 def run_evaluation(dataset_path: Path, top_k: int) -> EvalReport:
     cases = load_dataset(dataset_path)
-    embeddings = DashScopeEmbeddings(model=config.EMBEDDINGS_MODEL)
+    embeddings = get_dense_embeddings()
     try:
         vector_service = VectorStoreService(embeddings)
     except Exception as exc:

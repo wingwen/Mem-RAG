@@ -15,7 +15,7 @@ import os
 
 from app.core.rag import RagService
 from app.core.knowledge_base import KnowledgeBaseService
-from langchain_community.chat_models import ChatTongyi
+from app.llm.factory import get_light_chat_model
 from langchain_core.messages import HumanMessage
 from app.core import config_data as config
 from app.models.models import Base, User, ChatSession, ChatMessage, MemoryTopic
@@ -34,6 +34,9 @@ app = FastAPI()
 app.add_middleware(
     CORSMiddleware,
     allow_origins=config.CORS_ORIGINS,
+    allow_origin_regex=(
+        config.CORS_ORIGIN_REGEX if config.CORS_ALLOW_LOCALHOST_ANY_PORT else None
+    ),
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -66,7 +69,7 @@ async def save_chat_history(s_id: int, user_in: str, raw_out: str):
             code_str = "\n---\n".join(codes) if codes else ""
             clean_text = re.sub(r"```.*?```", "", raw_out, flags=re.DOTALL).strip()
 
-            chat_model = ChatTongyi(model="qwen-turbo")
+            chat_model = get_light_chat_model()
 
             count_res = await db.execute(select(func.count(ChatMessage.id)).where(ChatMessage.session_id == s_id))
             msg_count = count_res.scalar()
